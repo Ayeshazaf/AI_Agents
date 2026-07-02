@@ -1,0 +1,14 @@
+from .model import TaskStatus
+from fastapi import HTTPException
+
+ALLOWED_TRANSITIONS = {
+    "pending": ["in_progress"],
+    "in_progress": ["completed"],
+    "completed": []
+}
+
+if new_status not in ALLOWED_TRANSITIONS[current_status]:
+    raise HTTPException(
+    status_code=400,
+    detail=f"Cannot transition from {current_status} to {new_status}"
+)
