@@ -2,11 +2,9 @@ from fastapi import APIRouter, Depends, FastAPI
 from pydantic import BaseModel, Field
 from .model import Task
 from shared.database import SessionLocal
-app = FastAPI()
-
+router = APIRouter()
 # tasks = []
 db = SessionLocal()
-
 
 class TaskCreate(BaseModel):
     id: int
@@ -19,11 +17,11 @@ class TaskResponse(BaseModel):
     id: int
     title: str
 
-@app.get("/tasks")
+@router.get("/tasks")
 async def read_tasks():  
     return db.query(Task).all()
 
-@app.post("/tasks", response_model=TaskResponse)
+@router.post("/tasks", response_model=TaskResponse)
 async def create_task(task: TaskCreate):
     db_task = Task(**task.dict())
     task.updated_at = datetime.utcnow()
@@ -32,14 +30,14 @@ async def create_task(task: TaskCreate):
     db.refresh(db_task)
     return TaskResponse(**db_task.__dict__)
 
-@app.get("/tasks/{task_id}")
+@router.get("/tasks/{task_id}")
 async def read_task(task_id: int):
     task = db.query(Task).filter(Task.id == task_id).first()
     if task:
         return TaskResponse(**task.__dict__)
     return {"message": f"Task {task_id} not found"}
 
-@app.delete("/tasks/{task_id}")
+@router.delete("/tasks/{task_id}")
 async def delete_task(task_id: int):
     task = db.query(Task).filter(Task.id == task_id).first()
     if task:
@@ -49,7 +47,7 @@ async def delete_task(task_id: int):
         return {"message": f"Task {task_id} deleted"}
     return {"message": f"Task {task_id} not found"}
 
-@app.put("/tasks/{task_id}")
+@router.put("/tasks/{task_id}")
 async def update_task(task_id: int, task: TaskCreate):
     existing_task = db.query(Task).filter(Task.id == task_id).first()
     if existing_task:

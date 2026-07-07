@@ -9,8 +9,5 @@ def chunk_text(text, chunk_size=400, overlap=50):
     
     print(f"Total chunks created: {chunk_count}")
     print(f"First chunk: {chunks[0]}")
-    print(f"Last chunk: {chunks[-1]}")
-
-
-        
+    print(f"Last chunk: {chunks[-1]}")  
     return chunks

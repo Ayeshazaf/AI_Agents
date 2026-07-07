@@ -7,6 +7,8 @@ Base = declarative_base()
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+import os
 
+print(os.path.abspath("test.db"))
 #write commands to install sqlalchemy  using pip in the terminal
 # pip install sqlalchemy

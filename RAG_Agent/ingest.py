@@ -1,15 +1,17 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import UploadFile, File, APIRouter
 import fitz  # PyMuPDF
 from shared.database import SessionLocal, engine, Base
 from .db_model import document, chunks
 from .chunker import chunk_text
+from .embedder import embedder
+from .retriever import retrieve
 import shared.init_db 
 import re
-app = FastAPI()
+router = APIRouter()
 db = SessionLocal()
 
 
-@app.post("/upload_pdf")
+@router.post("/upload_pdf")
 async def upload_pdf(file: UploadFile = File(...)):
     # Open the PDF file 
     pdf_bytes = await file.read()
@@ -43,11 +45,18 @@ async def upload_pdf(file: UploadFile = File(...)):
         )
     
     db.commit()
+
+    # Generate embeddings for all chunks
+    embedder()
+
+
     return {
     "filename": file.filename,
     "page_count": count,
     "text": all_pages_text
 }
+
+
 
 def clean_text(text):
     # Remove page numbers
