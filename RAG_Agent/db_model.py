@@ -4,6 +4,7 @@ from sqlalchemy import DateTime
 from datetime import datetime
 from shared.database import Base
 
+
 class document(Base):
     __tablename__ = "documents"
 
@@ -13,11 +14,16 @@ class document(Base):
     page_count = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+
 class chunks(Base):
     __tablename__ = "chunks"
     id = Column(Integer, primary_key=True, index=True)
     document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    
     chunk_index = Column(Integer, nullable=False)
     chunk_text = Column(String, nullable=False)
+    source_document = relationship("document", backref="chunks")
+    doc_category = Column(String, nullable=True)  # Optional category field
+    page_number = Column(Integer, nullable=True)  # Optional page number field
     
     
