@@ -16,8 +16,20 @@ VALID_STATUSES = {
     "escalated" : ["in_review", "closed"],
     "closed" : []
 }
-if new_status not in VALID_STATUSES[current_status]:
-    raise HTTPException(
-        status_code=400,
-        detail=f"Cannot transition from {current_status} to {new_status}"
-    )
+
+def enforce_status_transition(current_status: ComplaintStatus, new_status: ComplaintStatus):
+    if current_status == new_status:
+        return  # No transition needed
+
+    if current_status not in VALID_STATUSES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid current status: {current_status}"
+        )
+    if new_status not in VALID_STATUSES[current_status]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot transition from {current_status} to {new_status}"
+        )
+
+

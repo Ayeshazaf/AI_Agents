@@ -1,0 +1,1 @@
+# python -m shared.init_db 

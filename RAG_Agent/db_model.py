@@ -22,7 +22,6 @@ class chunks(Base):
     __tablename__ = "chunks"
     id = Column(Integer, primary_key=True, index=True)
     document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
-    
     chunk_index = Column(Integer, nullable=False)
     chunk_text = Column(String, nullable=False)
     source_document = relationship("document", backref="chunks")
