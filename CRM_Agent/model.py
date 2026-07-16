@@ -52,6 +52,6 @@ class ChatHistory(Base):
     customer_id = Column(Integer, ForeignKey('customers.id'))
     role = Column(String, default="user")  # role can be 'user' or 'assistant'
     message = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
 
     customer = relationship("Customer", back_populates="sessions")

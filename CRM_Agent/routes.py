@@ -43,7 +43,16 @@ class ComplaintResponse(BaseModel):
     status: ComplaintStatus
     priority: ComplaintPriority
 
- 
+class IntentResult(BaseModel):
+    intent: str
+
+
+class ChatResponse(BaseModel):
+    session_id: str
+    last_messages: list[str]
+    assistant_response: str
+    intent_result: IntentResult
+
 @router.get("/customers")
 async def read_customers( db: Session = Depends(get_db)):
     logger.info("Fetching all customers")
@@ -168,7 +177,7 @@ async def close_complaint(complaint_id: int, complaint:ComplaintCreate, db: Sess
 
 
 
-@router.post("/crm/chat/")
+@router.post("/crm/chat/", response_model=ChatResponse)
 async def chat(session_id: str, customer_id: int, user_message: str, db: Session = Depends(get_db)):
     logger.info(f"Received chat message from customer ID: {customer_id} in session: {session_id}")
     if session_id is None:
@@ -189,7 +198,7 @@ async def chat(session_id: str, customer_id: int, user_message: str, db: Session
 
     # Classify intent and generate response
     intent_result = classify_intent(user_message)
-    assistant_response = generate_response(intent_result["intent"])
+    assistant_response = generate_response(intent_result, customer_id=customer_id, db=db)
 
     # Add the assistant response
     new_assistant_message = ChatHistory(

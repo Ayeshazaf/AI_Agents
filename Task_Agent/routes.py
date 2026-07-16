@@ -7,7 +7,7 @@ from datetime import datetime
 from .services import enforce_status_transition
 from shared.logging_config import logger
 from shared.init_db import Base
-
+from .intent import classify_intent, generate_response
 router = APIRouter()
 
 class TaskCreate(BaseModel):
@@ -20,6 +20,9 @@ class TaskCreate(BaseModel):
 class TaskResponse(BaseModel):
     id: int
     title: str
+
+class ChatResponse(BaseModel):
+    message: str
 
 @router.get("/tasks")
 async def read_tasks(db: Session = Depends(get_db)):  
@@ -77,3 +80,14 @@ async def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_
         db.commit()
         logger.info(f"Task updated with ID: {task_id}")
         return {"message": f"Task {task_id} updated", "task": task}
+    logger.warning(f"Task not found with ID: {task_id}")
+    return {"message": f"Task {task_id} not found"}
+
+@router.post("/task-agent/chat", response_model=ChatResponse)
+async def task_via_chat(user_message: str, db: Session = Depends(get_db)):
+    logger.info(f"Received user message: {user_message}")
+    intent = classify_intent(user_message)
+    logger.info(f"Classified intent: {intent}")
+    response = generate_response(intent, user_message, db)
+    logger.info(f"Generated response: {response}")
+    return response

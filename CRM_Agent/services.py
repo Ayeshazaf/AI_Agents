@@ -1,6 +1,7 @@
-from .model import ComplaintStatus
-from fastapi import HTTPException
+from django.db import router
 
+from .model import ComplaintStatus, Complaint
+from fastapi import HTTPException
 
 # Valid transitions
 # Open → In-review, Escalated
@@ -32,4 +33,54 @@ def enforce_status_transition(current_status: ComplaintStatus, new_status: Compl
             detail=f"Cannot transition from {current_status} to {new_status}"
         )
 
+def create_complaint(db, complaint_data):
+    new_complaint = Complaint(**complaint_data)
+    db.add(new_complaint)
+    db.commit()
+    db.refresh(new_complaint)
+    return new_complaint
 
+def update_complaint_priority(db, customer_id, new_priority):
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    if not complaint:
+        raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
+    
+    complaint.priority = new_priority
+    db.commit()
+    db.refresh(complaint)
+    
+    return complaint
+
+def close_complaint(db, customer_id):
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    if not complaint:
+        raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
+    
+    enforce_status_transition(complaint.status, "closed")
+    
+    complaint.status = "closed"
+    db.commit()
+    db.refresh(complaint)
+    
+    return complaint
+
+
+def check_complaint_status(db, customer_id):
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    if not complaint:
+        raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
+    
+    return complaint.status
+
+def escalate_complaint(db, customer_id):
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    if not complaint:
+        raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
+    
+    enforce_status_transition(complaint.status, "escalated")
+    
+    complaint.status = "escalated"
+    db.commit()
+    db.refresh(complaint)
+    
+    return complaint
