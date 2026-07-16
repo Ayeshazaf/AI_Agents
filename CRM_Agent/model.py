@@ -22,7 +22,7 @@ class ComplaintPriority(int, Enum):
 class Customer(Base):
     __tablename__ = 'customers'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement= True)
     name = Column(String)
     email = Column(String, unique=True)
     phone_number = Column(String)
@@ -34,7 +34,7 @@ class Customer(Base):
 class Complaint(Base):
     __tablename__ = 'complaints'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement= True)
     customer_id = Column(Integer, ForeignKey('customers.id'))
     description = Column(String)
     status = Column(SqlEnum(ComplaintStatus))
@@ -47,7 +47,7 @@ class Complaint(Base):
 class ChatHistory(Base):
     __tablename__ = 'chat_history'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement= True)
     session_id = Column(String)
     customer_id = Column(Integer, ForeignKey('customers.id'))
     role = Column(String, default="user")  # role can be 'user' or 'assistant'

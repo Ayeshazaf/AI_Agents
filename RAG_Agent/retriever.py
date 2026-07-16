@@ -49,6 +49,12 @@ def retrieve_endpoint(query: str, top_k: int = 5, category_filter: str = None, d
             results.append(chunks[idx])
             
     logger.info(f"Retrieved {len(results)} chunks from FAISS index for query: '{query}'")
+    
+    llm_prompt = build_prompt(query, results, history)
+    logger.info(f"Constructed LLM prompt: {llm_prompt}")
+    llm_model = "Qwen2.5-3B-Instruct"
+    llm_response = llm_model.generate(llm_prompt)
+    
     return {
         "answer_chunks": [result["content"] for result in results],
         "sources": [
@@ -59,7 +65,8 @@ def retrieve_endpoint(query: str, top_k: int = 5, category_filter: str = None, d
             }
             for i, result in enumerate(results)
         ],
-        "total_tokens_estimated": len(build_prompt(query, results, history)) // 4
+        "total_tokens_estimated": len(build_prompt(query, results, history)) // 4,
+        "llm_response": llm_response
     }
 
 

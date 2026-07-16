@@ -70,7 +70,7 @@ def create_complaint(client, customer_id, description, status, priority):
         "description": description,
         "status": status,
         "priority": priority,
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now().isoformat(),
     })
     return response
 

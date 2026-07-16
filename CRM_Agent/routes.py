@@ -169,7 +169,7 @@ async def close_complaint(complaint_id: int, complaint:ComplaintCreate, db: Sess
 
 
 @router.post("/crm/chat/")
-async def chat(session_id: str,customer_id: int , user_message: str, db: Session = Depends(get_db)):
+async def chat(session_id: str, customer_id: int, user_message: str, db: Session = Depends(get_db)):
     logger.info(f"Received chat message from customer ID: {customer_id} in session: {session_id}")
     if session_id is None:
         session_id = str(uuid.uuid4())
