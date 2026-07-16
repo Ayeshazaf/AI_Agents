@@ -1,23 +1,12 @@
 from fastapi import FastAPI, Depends, APIRouter
 import shared.init_db
-from Task_Agent.routes import router as task_router
-from RAG_Agent.ingest import router as ingest_app
-from RAG_Agent.retriever import router as rag_router
-from CRM_Agent.routes import router as crm_router
-from CRM_Agent.intent import classify_intent, generate_response
 from shared.database import get_db
 from sqlalchemy.orm import Session
 from shared.logging_config import logger
 from CRM_Agent.model import Complaint, Customer
 from Task_Agent.model import Task
-from RAG_Agent.db_model import document, chunks
 
 router = APIRouter()
-
-@router.include_router(task_router, prefix="/tasks", tags=["tasks"])
-@router.include_router(ingest_app, prefix="/ingest", tags=["ingest"])
-@router.include_router(rag_router, prefix="/rag", tags=["rag"])
-@router.include_router(crm_router, prefix="/crm", tags=["crm"])
 
 
 @router.get("/weekly_report")
