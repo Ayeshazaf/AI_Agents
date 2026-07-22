@@ -198,7 +198,7 @@ async def chat(session_id: str, customer_id: int, user_message: str, db: Session
 
     # Classify intent and generate response
     intent_result = classify_intent(user_message)
-    assistant_response = generate_response(intent_result, customer_id=customer_id, db=db)
+    assistant_response = generate_response(intent_result["intent"], customer_id=customer_id, db=db)
 
     # Add the assistant response
     new_assistant_message = ChatHistory(

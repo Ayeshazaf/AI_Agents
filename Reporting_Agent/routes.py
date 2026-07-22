@@ -14,11 +14,15 @@ def generate_weekly_report(db: Session = Depends(get_db)):
     logger.info("Generating weekly report")
     
     # Fetch data for the report
-    total_customers = db.query(Customer).count()
-    total_complaints = db.query(Complaint).count()
-    open_complaints = db.query(Complaint).filter(Complaint.status == "open").count()
-    closed_complaints = db.query(Complaint).filter(Complaint.status == "closed").count()
-    total_tasks = db.query(Task).count()
+    try: 
+        total_customers = db.query(Customer).count()
+        total_complaints = db.query(Complaint).count()
+        open_complaints = db.query(Complaint).filter(Complaint.status == "open").count()
+        closed_complaints = db.query(Complaint).filter(Complaint.status == "closed").count()
+        total_tasks = db.query(Task).count()
+    except Exception as exc:
+        logger.error("Error occurred while generating weekly report: %s", exc)
+        raise
 
     report = {
         "total_customers": total_customers,

@@ -41,7 +41,7 @@ def create_complaint(db, complaint_data):
     return new_complaint
 
 def update_complaint_priority(db, customer_id, new_priority):
-    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).first()
     if not complaint:
         raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
     
@@ -52,7 +52,7 @@ def update_complaint_priority(db, customer_id, new_priority):
     return complaint
 
 def close_complaint(db, customer_id):
-    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).first()
     if not complaint:
         raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
     
@@ -66,14 +66,14 @@ def close_complaint(db, customer_id):
 
 
 def check_complaint_status(db, customer_id):
-    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).first()
     if not complaint:
         raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
     
     return complaint.status
 
 def escalate_complaint(db, customer_id):
-    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).last()
+    complaint = db.query(Complaint).filter(Complaint.customer_id == customer_id).first()
     if not complaint:
         raise HTTPException(status_code=404, detail=f"Complaint for customer {customer_id} not found")
     

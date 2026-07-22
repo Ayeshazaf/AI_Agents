@@ -12,9 +12,11 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 def _fetch_tasks() -> list[dict[str, Any]]:
     try:
+        print(f"Fetching tasks from backend at {API_BASE_URL}/tasks")
         response = httpx.get(f"{API_BASE_URL}/tasks", timeout=100.0)
         response.raise_for_status()
         payload = response.json()
+        print(f"Received tasks payload: {payload}")
         return payload if isinstance(payload, list) else []
     except Exception as exc:
         logger.warning("Unable to fetch tasks from backend: %s", exc)
@@ -23,7 +25,7 @@ def _fetch_tasks() -> list[dict[str, Any]]:
 
 def _send_task_message(user_message: str) -> str:
     try:
-        response = httpx.post(f"{API_BASE_URL}/task-agent/chat", json={"user_message": user_message}, timeout=100.0)
+        response = httpx.post(f"{API_BASE_URL}/task-agent/chat", params={"user_message": user_message}, timeout=100.0)
         response.raise_for_status()
         payload = response.json()
         if isinstance(payload, dict):
